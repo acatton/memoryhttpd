@@ -4,9 +4,11 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 
 use anyhow::{Context, Result};
+use clap::Parser;
 use http::header;
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{body, Body, Method, Request, Response, Server, StatusCode};
+use simple_logger::SimpleLogger;
 use tokio::sync::RwLock;
 
 #[derive(Debug, Default)]
@@ -46,6 +48,21 @@ async fn delete(state: Arc<RwLock<State>>, key: String) -> Result<Response<Body>
 }
 
 async fn handler(state: Arc<RwLock<State>>, mut req: Request<Body>) -> Result<Response<Body>> {
+    let host = req
+        .headers()
+        .get(header::HOST)
+        .map(|v| v.to_str())
+        .transpose()
+        .context("Could not read host header")?
+        .unwrap_or("localhost");
+    let method = req.method().as_str();
+    let path = req.uri().path();
+    log::info!(
+        "{method} {host}{path}",
+        method = method,
+        host = host,
+        path = path
+    );
     if !req.uri().path().starts_with('/') {
         return Response::builder()
             .status(StatusCode::BAD_REQUEST)
@@ -53,16 +70,7 @@ async fn handler(state: Arc<RwLock<State>>, mut req: Request<Body>) -> Result<Re
             .context("Could not build bad request response for missing leading slash");
     }
 
-    let key: String = req
-        .headers()
-        .get(header::HOST)
-        .map(|v| v.to_str())
-        .transpose()
-        .context("Could not read host header")?
-        .unwrap_or("localhost")
-        .chars()
-        .chain(req.uri().path().chars())
-        .collect();
+    let key: String = host.chars().chain(req.uri().path().chars()).collect();
 
     let method = req.method();
     if method == Method::GET {
@@ -84,9 +92,29 @@ async fn handler(state: Arc<RwLock<State>>, mut req: Request<Body>) -> Result<Re
     }
 }
 
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Enable colors in logging
+    #[arg(long, default_value_t = false)]
+    no_logging_colors: bool,
+
+    /// Minimal logging level
+    #[arg(short, long, default_value_t=log::LevelFilter::Info)]
+    log_level: log::LevelFilter,
+
+    address: SocketAddr,
+}
+
 #[tokio::main]
-async fn main() {
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+async fn main() -> Result<()> {
+    let args = Args::parse();
+
+    SimpleLogger::new()
+        .with_level(args.log_level)
+        .with_colors(!args.no_logging_colors)
+        .init()
+        .context("Could not initialize logging")?;
 
     let state = Arc::new(RwLock::new(State::default()));
 
@@ -95,9 +123,9 @@ async fn main() {
         async move { Ok::<_, Infallible>(service_fn(move |req| handler(state.clone(), req))) }
     });
 
-    let server = Server::bind(&addr).serve(make_svc);
-
-    if let Err(e) = server.await {
-        eprintln!("server error: {}", e);
-    }
+    Server::bind(&args.address)
+        .serve(make_svc)
+        .await
+        .context("Server error")?;
+    Ok(())
 }

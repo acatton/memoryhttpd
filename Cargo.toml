@@ -1,7 +1,9 @@
 [package]
 name = "memoryhttpd"
+description = "In-memory, multi-host HTTP server"
 version = "0.1.0"
 edition = "2021"
+authors = ["Antoine Catton"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -10,3 +12,6 @@ hyper = { version = "0.14", features = ["full"] }
 tokio = { version = "1", features = ["full"] }
 http = "0.2"
 anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+log = "0.4"
+simple_logger = "2.0.0"
