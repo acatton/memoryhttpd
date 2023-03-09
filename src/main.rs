@@ -38,6 +38,12 @@ async fn set(state: Arc<RwLock<State>>, key: String, value: &[u8]) -> Result<Res
         .context("Could not build response")
 }
 
+async fn delete(state: Arc<RwLock<State>>, key: String) -> Result<Response<Body>> {
+    let mut write_state = state.write().await;
+    write_state.kv.remove(&key);
+    Ok(Response::new(Body::empty()))
+}
+
 async fn handler(state: Arc<RwLock<State>>, mut req: Request<Body>) -> Result<Response<Body>> {
     if !req.uri().path().starts_with('/') {
         return Response::builder()
@@ -67,6 +73,8 @@ async fn handler(state: Arc<RwLock<State>>, mut req: Request<Body>) -> Result<Re
         set(state, key, content.as_ref())
             .await
             .context("Could not set value")
+    } else if method == Method::DELETE {
+        delete(state, key).await.context("Could not delete value")
     } else {
         Response::builder()
             .status(StatusCode::METHOD_NOT_ALLOWED)
