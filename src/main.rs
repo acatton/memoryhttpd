@@ -1,11 +1,12 @@
-use anyhow::{Context, Result};
-use http::header;
-use hyper::service::{make_service_fn, service_fn};
-use hyper::{body, Body, Method, Request, Response, Server, StatusCode};
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::net::SocketAddr;
 use std::sync::Arc;
+
+use anyhow::{Context, Result};
+use http::header;
+use hyper::service::{make_service_fn, service_fn};
+use hyper::{body, Body, Method, Request, Response, Server, StatusCode};
 use tokio::sync::RwLock;
 
 #[derive(Debug, Default)]
