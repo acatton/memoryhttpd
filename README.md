@@ -1,7 +1,9 @@
 memoryhttpd
 ===========
 
-Memoryhttpd is an in-memory HTTP server. Resources can be added by using PUT.
+![memoryhttpd Icon](.resources/icon.png)
+
+memoryhttpd is an in-memory HTTP server. Resources can be added by using PUT.
 It supports multiple hosts.
 
 For example:
