@@ -95,11 +95,11 @@ async fn handler(state: Arc<RwLock<State>>, mut req: Request<Body>) -> Result<Re
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// Enable colors in logging
+    /// Enable colors in logging.
     #[arg(long, default_value_t = false)]
     no_logging_colors: bool,
 
-    /// Minimal logging level
+    /// Minimal logging level.
     #[arg(short, long, default_value_t=log::LevelFilter::Info)]
     log_level: log::LevelFilter,
 
