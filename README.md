@@ -68,6 +68,17 @@ DELETE /full/path HTTP/1.1
 Host: hostname
 ```
 
+Set with an expiration (in milliseconds):
+
+```
+PUT /full/path HTTP/1.1
+Host: hostname
+X-Expire-ms: 30000
+Content-Length: 21
+
+value expiring in 30s
+```
+
 
 Use cases
 ---------
