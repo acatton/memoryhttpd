@@ -87,3 +87,11 @@ Use cases
 
 memoryhttpd can be used to store temporary tokens. For example using it as a
 backend for `/.well-known/acme-challenges/` for a reverse proxy.
+
+Mirrors
+-------
+
+This repository is mirrored on:
+
+* https://codeberg.org/acatton/memoryhttpd
+* https://github.com/acatton/memoryhttpd
