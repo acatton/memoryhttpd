@@ -4,6 +4,7 @@ description = "In-memory, multi-host HTTP server"
 version = "0.1.0"
 edition = "2021"
 authors = ["Antoine Catton"]
+license = "ISC"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
