@@ -103,6 +103,8 @@ struct Args {
     #[arg(short, long, default_value_t=log::LevelFilter::Info)]
     log_level: log::LevelFilter,
 
+    /// Address to bind on. It needs to also contain the hostname, use
+    /// 0.0.0.0 to listen on all addresses. (e.g. "0.0.0.0:3000")
     address: SocketAddr,
 }
 
